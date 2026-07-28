@@ -22,6 +22,10 @@ interface ContactFormData {
 }
 
 const ContactPage: React.FC = () => {
+  // 🔗 ඔයාගේ Google Apps Script Web App URL එක
+  const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbzEpoR1z7h6s0JVfiX21VbsZ2h0KFoXC9QKHl8H-atjan8LXJ4_KV93WKZ--wKKT2e7/exec";
+
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
@@ -36,7 +40,6 @@ const ContactPage: React.FC = () => {
     "idle" | "success" | "error"
   >("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -55,37 +58,27 @@ const ContactPage: React.FC = () => {
     setIsSubmitting(true);
     setSubmitStatus("idle");
     setErrorMessage("");
-    setFieldErrors({}); // assume this is `useState<{ [key: string]: string }>({})`
 
     try {
-      const response = await fetch("/api/contact", {
+      // Data payload for Google Apps Script
+      const payload = {
+        fullName: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company: formData.company,
+        subject: formData.subject || "General Inquiry",
+        message: formData.message,
+      };
+
+      // Send to Google Sheets Webhook
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 400 && data.errors) {
-          // Zod validation errors
-          const errorMap: { [key: string]: string } = {};
-          for (const err of data.errors) {
-            errorMap[err.field] = err.message;
-          }
-          setFieldErrors(errorMap);
-          setErrorMessage(errorMap.message);
-        } else {
-          // Other server-side error
-          setErrorMessage(
-            data.message || "Something went wrong. Please try again."
-          );
-        }
-        setSubmitStatus("error");
-        return;
-      }
 
       // On success
       setSubmitStatus("success");
@@ -97,8 +90,8 @@ const ContactPage: React.FC = () => {
         subject: "",
         message: "",
       });
-      setFieldErrors({});
     } catch (error) {
+      console.error("Submission Error:", error);
       setSubmitStatus("error");
       setErrorMessage("Something went wrong. Please try again.");
     } finally {
@@ -159,10 +152,10 @@ const ContactPage: React.FC = () => {
                   <div>
                     <h4 className="text-lg font-semibold text-white">Phone</h4>
                     <a
-                      href="tel:0342240040"
+                      href="tel:+61402200018"
                       className="text-slate-300 hover:text-blue-400 transition-colors"
                     >
-                      03 4224 0040
+                      +61 402 200 018
                     </a>
                   </div>
                 </div>
@@ -203,7 +196,7 @@ const ContactPage: React.FC = () => {
                     </div>
                     <div className="flex justify-between">
                       <span>Saturday:</span>
-                      <span className="text-green-400">10pm – 6pm</span>
+                      <span className="text-green-400">10am – 6pm</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Sunday:</span>
@@ -250,7 +243,9 @@ const ContactPage: React.FC = () => {
               {submitStatus === "error" && (
                 <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3">
                   <AlertCircle className="w-5 h-5 text-red-400" />
-                  <p className="text-red-300">{errorMessage}</p>
+                  <p className="text-red-300">
+                    {errorMessage || "Something went wrong. Please try again."}
+                  </p>
                 </div>
               )}
 

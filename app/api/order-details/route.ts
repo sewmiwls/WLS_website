@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -10,45 +9,30 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    // Fetch both pending submission and payment data
-    const pendingSubmission = await prisma.pendingSubmission.findUnique({
-      where: { uref },
-      include: {
-        Payment: true,
-      },
-    });
-
-    if (!pendingSubmission) {
-      return new NextResponse("Order not found", { status: 404 });
-    }
-
-    // Parse the totals JSON from pending submission
-    const totals =
-      typeof pendingSubmission.totals === "string"
-        ? JSON.parse(pendingSubmission.totals)
-        : pendingSubmission.totals;
-
-    // Prepare order data
+    // Static order data (Database removed)
     const orderData = {
-      uref: pendingSubmission.uref,
-      firstName: pendingSubmission.firstName,
-      lastName: pendingSubmission.lastName,
-      businessName: pendingSubmission.businessName,
-      email: pendingSubmission.email,
-      phone: pendingSubmission.phone,
-      selectedPackage: pendingSubmission.selectedPackage,
-      setupAmount: totals.setup,
-      monthlyAmount: totals.monthly,
-      totalAmount: totals.total,
-      paymentMethod: pendingSubmission.Payment?.method || "Direct Debit",
-      paymentReference: pendingSubmission.Payment?.cref || "",
-      createdAt: pendingSubmission.createdAt,
-      paymentDate: pendingSubmission.Payment?.createdAt || null,
+      uref,
+      firstName: "John",
+      lastName: "Doe",
+      businessName: "Demo Business",
+      email: "john@example.com",
+      phone: "+61 400 000 000",
+      selectedPackage: "Starter Package",
+      setupAmount: 0,
+      monthlyAmount: 0,
+      totalAmount: 0,
+      paymentMethod: "Direct Debit",
+      paymentReference: "N/A",
+      createdAt: new Date(),
+      paymentDate: null,
     };
 
     return NextResponse.json(orderData);
   } catch (error) {
     console.error("Error fetching order details:", error);
-    return new NextResponse("Internal server error", { status: 500 });
+
+    return new NextResponse("Internal server error", {
+      status: 500,
+    });
   }
 }

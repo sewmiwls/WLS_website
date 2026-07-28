@@ -11,7 +11,7 @@ const Header: React.FC<{ visible: boolean }> = ({ visible }) => {
     { href: "/", label: "Home" },
     { href: "/caseStudies", label: "Case Studies" },
     { href: "/packages", label: "Coverage" },
-    { href: "/getListed", label: "Get Listed Now" },
+    { href: "/getlisted", label: "Get Listed Now" },
     { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },
     { href: "/terms", label: "Terms And Conditions" },

@@ -1,12 +1,10 @@
-import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-// Dummy function to generate a PDF Buffer (replace with real PDF generation)
+// Dummy function to generate a PDF Buffer
 async function generateReceiptPdf(orderData: any): Promise<Buffer> {
-  // In production, use a library like pdfkit or @react-pdf/renderer
-  // Here, just return a simple PDF header for demonstration
   const pdfHeader =
     "%PDF-1.4\n%âãÏÓ\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<<>>\n%%EOF";
+
   return Buffer.from(pdfHeader, "utf-8");
 }
 
@@ -20,21 +18,39 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Fetch order data from your database or service here
-  // For example, you might fetch from a database using Prisma:
-  const orderData = await prisma.pendingSubmission.findUnique({
-    where: { uref },
-    include: { Payment: true },
-  });
+  try {
+    // Static order data (Database removed)
+    const orderData = {
+      uref,
+      firstName: "John",
+      lastName: "Doe",
+      businessName: "Demo Business",
+      email: "john@example.com",
+      phone: "+61 400 000 000",
+      selectedPackage: "Starter Package",
+      setupAmount: 0,
+      monthlyAmount: 0,
+      totalAmount: 0,
+      paymentMethod: "Direct Debit",
+      paymentReference: "N/A",
+      createdAt: new Date(),
+    };
 
-  // Generate PDF buffer
-  const pdfBuffer = await generateReceiptPdf(orderData);
+    const pdfBuffer = await generateReceiptPdf(orderData);
 
-  return new NextResponse(pdfBuffer, {
-    status: 200,
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="receipt-${uref}.pdf"`,
-    },
-  });
+    return new NextResponse(pdfBuffer, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="receipt-${uref}.pdf"`,
+      },
+    });
+  } catch (error) {
+    console.error("Error generating receipt:", error);
+
+    return NextResponse.json(
+      { error: "Failed to generate receipt" },
+      { status: 500 }
+    );
+  }
 }

@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -17,18 +16,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = contactSchema.parse(body);
 
-    const contact = await prisma.contact.create({
-      data: {
-        name: validatedData.name,
-        email: validatedData.email,
-        phone: validatedData.phone || '',
-        company: validatedData.company || '',
-        subject: validatedData.subject,
-        message: validatedData.message,
-        status: "NEW", // Assuming default status enum or string
-
-      },
-    });
+    // Database save removed
+    const contact = {
+      id: Date.now().toString(),
+      ...validatedData,
+      status: "NEW",
+      createdAt: new Date(),
+    };
 
     await sendEmailNotification(contact);
 
@@ -65,34 +59,22 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
-    const status = searchParams.get("status");
-
-    const skip = (page - 1) * limit;
-    const where = status ? { status } : {};
-
-    const [contacts, total] = await Promise.all([
-      prisma.contact.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-      }),
-      prisma.contact.count({ where }),
-    ]);
 
     return NextResponse.json({
-      contacts,
+      contacts: [],
       pagination: {
         page,
         limit,
-        total,
-        pages: Math.ceil(total / limit),
+        total: 0,
+        pages: 0,
       },
     });
   } catch (error) {
     console.error("Error fetching contacts:", error);
+
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
@@ -100,8 +82,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Dummy email sender function
 async function sendEmailNotification(contact: any) {
-  // Replace with real email integration (Nodemailer, SendGrid, etc.)
   console.log("New contact submission:", contact);
 }

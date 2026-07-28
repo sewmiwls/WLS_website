@@ -1,6 +1,8 @@
-import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+
+// Temporary in-memory users
+let users: any[] = [];
 
 // Helper function to hash passwords
 async function hashPassword(password: string): Promise<string> {
@@ -8,25 +10,22 @@ async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, saltRounds);
 }
 
+// GET - Get all users
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const name = searchParams.get("username");
 
-    const users = await prisma.user.findMany({
-      where: name
-        ? {
-            name: {
-              contains: name,
-              mode: "insensitive",
-            },
-          }
-        : undefined,
-    });
+    const filteredUsers = name
+      ? users.filter((user) =>
+          user.name.toLowerCase().includes(name.toLowerCase())
+        )
+      : users;
 
-    return NextResponse.json(users);
+    return NextResponse.json(filteredUsers);
   } catch (error) {
     console.error("Error fetching users:", error);
+
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 }
@@ -34,26 +33,46 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// POST - Create new user
 export async function POST(request: NextRequest) {
   try {
     const { name, email, password } = await request.json();
-    if (!name || !email) {
+
+    if (!name || !email || !password) {
       return NextResponse.json(
-        { error: "Name and email are required" },
+        { error: "Name, email and password are required." },
         { status: 400 }
       );
     }
 
-    // hash password if needed
+    // Check duplicate email
+    const existingUser = users.find((u) => u.email === email);
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "Email already exists." },
+        { status: 409 }
+      );
+    }
+
     const hashedPassword = await hashPassword(password);
 
-    const newUser = await prisma.user.create({
-      data: { name, email, password: hashedPassword },
-    });
+    const newUser = {
+      id: Date.now().toString(),
+      name,
+      email,
+      password: hashedPassword,
+      createdAt: new Date(),
+    };
 
-    return NextResponse.json(newUser, { status: 201 });
+    users.push(newUser);
+
+    return NextResponse.json(newUser, {
+      status: 201,
+    });
   } catch (error) {
     console.error("Error creating user:", error);
+
     return NextResponse.json(
       { error: "Failed to create user" },
       { status: 500 }
