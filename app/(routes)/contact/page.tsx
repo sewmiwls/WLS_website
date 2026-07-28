@@ -24,7 +24,7 @@ interface ContactFormData {
 const ContactPage: React.FC = () => {
   // 🔗 ඔයාගේ Google Apps Script Web App URL එක
   const GOOGLE_SCRIPT_URL =
-    "https://script.google.com/macros/s/AKfycbzEpoR1z7h6s0JVfiX21VbsZ2h0KFoXC9QKHl8H-atjan8LXJ4_KV93WKZ--wKKT2e7/exec";
+    "https://script.google.com/macros/s/AKfycbxvDHe9_c-H-54D9O80wjAt-3AhvcG1iDIQroWZXOKKVIy3_9oxzNTnKsPF59cdIfoU/exec";
 
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
