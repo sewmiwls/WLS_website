@@ -16,7 +16,9 @@ import Header from "@/components/Header";
 
 export default function GetListedPage() {
   // 🔗 METHANATA OYAGE EZIDEBIT DIRECT DEBIT FORM LINK EKA DANNA
-  const ezidebitFormUrl = "https://secure.ezidebit.com.au/webddr/Request.aspx?a=7126D855B640623980DD74C33DB6319F&aDur=1&afreq=4";
+  const ezidebitFormUrl =
+  process.env.NEXT_PUBLIC_EZIDEBIT_URL ||
+  "https://secure.ezidebit.com.au/webddr/Request.aspx?a=7126D855B640623980DD74C33DB6319F&aDur=1&afreq=4";
 
   const [isLoading, setIsLoading] = useState(true);
 
