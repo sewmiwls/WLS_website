@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Search,
   MapPin,
@@ -135,11 +136,6 @@ const ServiceCardsGrid: React.FC<ServiceCardsGridProps> = ({
 }) => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
-  const handleLearnMore = (href?: string) => {
-    if (!href) return;
-    window.location.href = href;
-  };
-
   return (
     <section
       id="services"
@@ -260,15 +256,14 @@ const ServiceCardsGrid: React.FC<ServiceCardsGridProps> = ({
                     </div>
                   </div>
 
-                  {/* CTA Button */}
+                  {/* CTA Button Link */}
                   <div className="mt-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
-                    <button
-                      type="button"
-                      onClick={() => handleLearnMore(service.href)}
-                      className={`w-full py-3 px-6 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold shadow-lg shadow-[#0066FF]/20 hover:shadow-xl hover:shadow-[#00C2FF]/20 transition-all duration-300 transform hover:scale-105`}
+                    <Link
+                      href={service.href || "/getlisted"}
+                      className={`block text-center py-3 px-6 rounded-xl bg-gradient-to-r ${service.gradient} text-white font-semibold shadow-lg shadow-[#0066FF]/20 hover:shadow-xl hover:shadow-[#00C2FF]/20 transition-all duration-300 transform hover:scale-105`}
                     >
                       Learn More
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -276,20 +271,19 @@ const ServiceCardsGrid: React.FC<ServiceCardsGridProps> = ({
           ))}
         </div>
 
-        {/* Bottom CTA */}
+        {/* Bottom CTA Section with Link */}
         <div className="text-center mt-16">
           <p className="text-slate-300 font-poppins mb-8 text-lg">
             Ready to transform your local presence?
           </p>
 
-          <button
-            type="button"
-            onClick={() => (window.location.href = "/getListed")}
+          <Link
+            href="/getlisted"
             className="inline-flex font-poppins items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#0066FF] to-[#0052CC] text-white font-bold rounded-2xl shadow-xl shadow-[#0066FF]/20 hover:shadow-2xl hover:shadow-[#00C2FF]/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
           >
             <span>Get Started Today</span>
             <TrendingUp className="w-5 h-5" />
-          </button>
+          </Link>
         </div>
       </div>
 
