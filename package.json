@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "@react-google-maps/api": "^2.20.6",
     "@react-three/drei": "^10.0.8",
     "@react-three/fiber": "^9.1.2",
@@ -47,6 +49,7 @@
     "@types/three": "^0.176.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "tsx": "^4.19.4",
     "typescript": "^5"
