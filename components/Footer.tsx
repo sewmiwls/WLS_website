@@ -50,7 +50,7 @@ const InstagramIcon = ({ className = "" }: SocialIconProps) => (
 const Footer: React.FC<FooterProps> = ({
   companyName = "WLS Digital Agency",
   companyTagline = "Running a Business Without Online Exposure is like Working Hard Without Direction",
-  phones = ["0342240040", "+61402200018"],
+  phones = ["+61 342 240 040", "+61 402 200 018"],
   email = "wherelocalsearch@gmail.com",
   address = "Unit 9/3-11 High St, North Melbourne VIC 3051",
   businessHours = {
