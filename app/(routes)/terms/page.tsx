@@ -1,5 +1,6 @@
 import Breadcrumbs from "@/components/BreadCrumbs";
 import Header from "@/components/Header";
+import Link from "next/link";
 import React from "react";
 
 const TermsAndConditions = () => {
@@ -223,10 +224,15 @@ const TermsAndConditions = () => {
                 Join the ranks of successful businesses that have transformed
                 their digital presence with our proven strategies.
               </p>
-              <button className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-semibold text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
+              
+              {/* 🟢 /getlisted path එකට redirect වන Link එක */}
+              <Link
+                href="/getlisted"
+                className="inline-block group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-semibold text-white overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25"
+              >
                 <span className="relative z-10">Start Your Transformation</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+              </Link>
             </div>
           </div>
         </div>
